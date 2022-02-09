@@ -67,7 +67,7 @@ const (
 
 	// DefaultUpstreamTimeout represents the default connect,
 	// read and send timeout (in seconds) with upstreams.
-	DefaultUpstreamTimeout = 60
+	DefaultUpstreamTimeout = float64(60.0)
 )
 
 // Metadata contains all meta information about resources.
@@ -81,6 +81,7 @@ type Metadata struct {
 
 // Route apisix route object
 // +k8s:deepcopy-gen=true
+
 type Route struct {
 	Metadata `json:",inline" yaml:",inline"`
 
@@ -95,6 +96,52 @@ type Route struct {
 	RemoteAddrs     []string `json:"remote_addrs,omitempty" yaml:"remote_addrs,omitempty"`
 	UpstreamId      string   `json:"upstream_id,omitempty" yaml:"upstream_id,omitempty"`
 	Plugins         Plugins  `json:"plugins,omitempty" yaml:"plugins,omitempty"`
+}
+
+type RouteUnmarshal struct {
+	Metadata `json:",inline" yaml:",inline"`
+
+	Host            string           `json:"host,omitempty" yaml:"host,omitempty"`
+	Hosts           []string         `json:"hosts,omitempty" yaml:"hosts,omitempty"`
+	Uri             string           `json:"uri,omitempty" yaml:"uri,omitempty"`
+	Priority        int              `json:"priority,omitempty" yaml:"priority,omitempty"`
+	Vars            Vars             `json:"vars,omitempty" yaml:"vars,omitempty"`
+	Uris            []string         `json:"uris,omitempty" yaml:"uris,omitempty"`
+	Methods         []string         `json:"methods,omitempty" yaml:"methods,omitempty"`
+	EnableWebsocket bool             `json:"enable_websocket,omitempty" yaml:"enable_websocket,omitempty"`
+	RemoteAddrs     []string         `json:"remote_addrs,omitempty" yaml:"remote_addrs,omitempty"`
+	UpstreamId      UpstreamIdString `json:"upstream_id,omitempty" yaml:"upstream_id,omitempty"`
+	Plugins         Plugins          `json:"plugins,omitempty" yaml:"plugins,omitempty"`
+}
+
+type UpstreamIdString string
+
+func (us *UpstreamIdString) UnmarshalJSON(b []byte) error {
+	if b[0] == '"' {
+		return json.Unmarshal(b, (*string)(us))
+	}
+	var i int
+	if err := json.Unmarshal(b, &i); err != nil {
+		return err
+	}
+	s := strconv.Itoa(i)
+	*us = UpstreamIdString(s)
+	return nil
+}
+
+func (r *Route) FillRouteWithUnmarshal(r1 *RouteUnmarshal) {
+	r.Metadata = r1.Metadata
+	r.Host = r1.Host
+	r.Hosts = r1.Hosts
+	r.Uri = r1.Uri
+	r.Priority = r1.Priority
+	r.Vars = r1.Vars
+	r.Uris = r1.Uris
+	r.Methods = r1.Methods
+	r.EnableWebsocket = r1.EnableWebsocket
+	r.RemoteAddrs = r1.RemoteAddrs
+	r.UpstreamId = string(r1.UpstreamId)
+	r.Plugins = r1.Plugins
 }
 
 // Vars represents the route match expressions of APISIX.
@@ -188,11 +235,11 @@ type Upstream struct {
 // UpstreamTimeout represents the timeout settings on Upstream.
 type UpstreamTimeout struct {
 	// Connect is the connect timeout
-	Connect int `json:"connect" yaml:"connect"`
+	Connect float64 `json:"connect" yaml:"connect"`
 	// Send is the send timeout
-	Send int `json:"send" yaml:"send"`
+	Send float64 `json:"send" yaml:"send"`
 	// Read is the read timeout
-	Read int `json:"read" yaml:"read"`
+	Read float64 `json:"read" yaml:"read"`
 }
 
 // UpstreamNodes is the upstream node list.

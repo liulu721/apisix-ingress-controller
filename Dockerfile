@@ -17,7 +17,7 @@
 FROM golang:1.13.8 AS build-env
 LABEL maintainer="gxthrj@163.com"
 
-ARG ENABLE_PROXY=false
+ARG ENABLE_PROXY=true
 
 RUN rm -rf /etc/localtime \
     && ln -s /usr/share/zoneinfo/Hongkong /etc/localtime \

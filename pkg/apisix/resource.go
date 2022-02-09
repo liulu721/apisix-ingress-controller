@@ -96,10 +96,12 @@ func (i *item) route() (*v1.Route, error) {
 		return nil, fmt.Errorf("bad route config key: %s", i.Key)
 	}
 
+	var routeUnmarshal v1.RouteUnmarshal
 	var route v1.Route
-	if err := json.Unmarshal(i.Value, &route); err != nil {
+	if err := json.Unmarshal(i.Value, &routeUnmarshal); err != nil {
 		return nil, err
 	}
+	route.FillRouteWithUnmarshal(&routeUnmarshal)
 	return &route, nil
 }
 

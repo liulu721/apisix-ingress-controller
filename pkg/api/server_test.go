@@ -35,13 +35,13 @@ func TestServer(t *testing.T) {
 }
 
 func TestServerRun(t *testing.T) {
-	cfg := &config.Config{HTTPListen: "127.0.0.1:0"}
+	cfg := &config.Config{HTTPListen: "127.0.0.1:5000"}
 	srv, err := NewServer(cfg)
 	assert.Nil(t, err, "see non-nil error: ", err)
 
 	stopCh := make(chan struct{})
 	go func() {
-		time.Sleep(2 * time.Second)
+		time.Sleep(12 * time.Second)
 		close(stopCh)
 	}()
 

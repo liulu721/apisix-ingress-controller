@@ -42,7 +42,7 @@ func (t *translator) translateUpstreamRetriesAndTimeout(retries int, timeout *co
 			reason: "invalid value",
 		}
 	} else if timeout.Connect.Duration > 0 {
-		connTimeout = int(timeout.Connect.Seconds())
+		connTimeout = float64(timeout.Connect.Seconds())
 	}
 	if timeout.Read.Duration < 0 {
 		return &translateError{
@@ -50,7 +50,7 @@ func (t *translator) translateUpstreamRetriesAndTimeout(retries int, timeout *co
 			reason: "invalid value",
 		}
 	} else if timeout.Read.Duration > 0 {
-		readTimeout = int(timeout.Read.Seconds())
+		readTimeout = float64(timeout.Read.Seconds())
 	}
 	if timeout.Send.Duration < 0 {
 		return &translateError{
@@ -58,7 +58,7 @@ func (t *translator) translateUpstreamRetriesAndTimeout(retries int, timeout *co
 			reason: "invalid value",
 		}
 	} else if timeout.Send.Duration > 0 {
-		sendTimeout = int(timeout.Send.Seconds())
+		sendTimeout = float64(timeout.Send.Seconds())
 	}
 	ups.Timeout = &apisixv1.UpstreamTimeout{
 		Connect: connTimeout,

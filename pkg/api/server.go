@@ -42,7 +42,10 @@ func NewServer(cfg *config.Config) (*Server, error) {
 	}
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
-	router.Use(gin.Recovery(), gin.Logger())
+	//do not use logger since healthz for rediness probe is annoying.
+	//router.Use(gin.Recovery(), gin.Logger())
+	router.Use(gin.Recovery(), gin.LoggerWithWriter(gin.DefaultWriter, "/healthz"))
+
 	apirouter.Mount(router)
 
 	srv := &Server{
